@@ -4,6 +4,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import { Context, Telegraf } from "telegraf";
 import dayjs from "dayjs";
+import {ConsoleLogger} from "./logging/logger";
 
 dotenv.config({path: "../.env"});
 
@@ -19,30 +20,7 @@ const maxTimeout = ((process.env.MAX_TIMEOUT as unknown as number) || 15);
 let lastChecked: number|null = null;
 let alerted: boolean = false;
 
-let logger=(function(console){
-    return {
-        log: function(text: any){
-            text = "[" + formatDate() + "] " + text;
-            console.log(text);
-            // Your code
-        },
-        info: function (text: any) {
-            text = "[" + formatDate() + "] " + text;
-            console.info(text);
-            // Your code
-        },
-        warn: function (text: any) {
-            text = "[" + formatDate() + "] " + text;
-            console.warn(text);
-            // Your code
-        },
-        error: function (text: any) {
-            text = "[" + formatDate() + "] " + text;
-            console.error(text);
-            // Your code
-        }
-    };
-}(console));
+let logger = new ConsoleLogger();
 
 
 function formatDate(date: Date|null = null): string
@@ -75,7 +53,7 @@ app.get("/call-home", (req: Request, res: Response) => {
 });
 
 if (!token || !chat) {
-    logger.error("Token or chat not set");
+    logger.fatal("Token or chat not set");
 } else {
     bot.command("last", (ctx: Context) => {
         if (lastChecked === null) {
@@ -99,8 +77,8 @@ if (!token || !chat) {
         logger.log(`Listening on port ${port}`);
     });
 
-    process.once('SIGINT', () => bot.stop('SIGINT'));
-    process.once('SIGTERM', () => bot.stop('SIGTERM'));
+    //process.once('SIGINT', () => bot.stop('SIGINT'));
+    //process.once('SIGTERM', () => bot.stop('SIGTERM'));
 }
 
 
