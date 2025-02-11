@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { Context, Telegraf } from "telegraf";
 import dayjs from "dayjs";
 import {ConsoleLogger} from "./logging/logger";
+import {formatDate} from "./functions";
 
 dotenv.config({path: "../.env"});
 
@@ -21,12 +22,6 @@ let lastChecked: number|null = null;
 let alerted: boolean = false;
 
 let logger = new ConsoleLogger();
-
-
-function formatDate(date: Date|null = null): string
-{
-    return dayjs(date || Date.now()).format("YYYY-MM-DD HH:mm:ss");
-}
 
 async function sendAlert(): Promise<void>
 {

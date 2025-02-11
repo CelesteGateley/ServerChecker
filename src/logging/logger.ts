@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import {formatDate} from "../functions";
 
 abstract class Logger {
     protected level: LogLevel;
@@ -50,7 +50,7 @@ export class ConsoleLogger extends Logger {
 
     private prefix(): any
     {
-        return "[" + consoleColors.cyan + dayjs(Date.now()).format("YYYY-MM-DD HH:mm:ss") + consoleColors.reset + "] ";
+        return "[" + consoleColors.cyan + formatDate() + consoleColors.reset + "] ";
     }
 
     debug(text: any): void {
