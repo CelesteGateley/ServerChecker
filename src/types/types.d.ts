@@ -1,4 +1,4 @@
-import {Logger} from "../src/logging/logger";
+import {Logger} from "../logging/logger";
 
 export declare global {
     declare namespace globalThis {

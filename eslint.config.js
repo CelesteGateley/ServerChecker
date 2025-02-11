@@ -9,7 +9,7 @@ export default [
       files: ["**/*.{js,mjs,cjs,ts}"]
     },
     {
-      ignores: ["types/types.d.ts"]
+      ignores: ["src/types/types.d.ts"]
     },
     {
       languageOptions: {
