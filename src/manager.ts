@@ -1,7 +1,7 @@
 import {formatDate} from "./functions";
 
 export class Manager {
-    private timeout;
+    private readonly timeout: number;
     private lastCheckIn: number|null = null;
     private alerted = false;
 
@@ -9,10 +9,11 @@ export class Manager {
         this.timeout = timeout * 60 * 1000;
     }
 
-    shouldAlert() {
-        return !this.alerted && this.lastCheckIn !== null && (this.lastCheckIn < Date.now() - this.timeout);
-    }
-
+    /**
+     * Returns whether an alert should be sent out by the system, and if so, updates that an alert has been sent
+     *
+     * @returns boolean Whether the alert was sent
+     */
     alert(): boolean {
         if (this.lastCheckIn === null) {
             logger.debug("Server hasn't called home before, skipping...")
@@ -22,7 +23,7 @@ export class Manager {
             logger.debug("Recently alerted, skipping...");
             return false;
         }
-        if (this.shouldAlert()) {
+        if ((this.lastCheckIn < Date.now() - this.timeout)) {
             logger.debug("Server called home recently, skipping...")
             return false;
         }
@@ -30,6 +31,9 @@ export class Manager {
         return true;
     }
 
+    /**
+     * Updates the manager that a check in has occurred
+     */
     checkIn(): void
     {
         this.lastCheckIn = Date.now();
@@ -37,6 +41,11 @@ export class Manager {
         logger.debug('Server Called Home At: ' + formatDate(new Date(this.lastCheckIn)));
     }
 
+    /**
+     * When was the last time the server checked in
+     *
+     * @returns string|null Returns a string version of the check in, or null if it's not set
+     */
     getLastCheckInDate(): string|null {
         if (this.lastCheckIn === null || this.lastCheckIn === undefined) {
             return null;
