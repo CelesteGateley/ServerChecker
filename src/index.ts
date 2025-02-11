@@ -1,0 +1,1 @@
+let lastChecked: number|null = null;
