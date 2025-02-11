@@ -11,11 +11,11 @@ dotenv.config({path: "../.env"});
 const telegram: Telegram = new Telegram(process.env.TOKEN || "", process.env.CHAT || "");
 const webserver: WebServer = new WebServer(process.env.PORT || 4200)
 
-let MAX_TIMEOUT = ((process.env.MAX_TIMEOUT as unknown as number) || 15);
+const MAX_TIMEOUT = ((process.env.MAX_TIMEOUT as unknown as number) || 15);
 let LAST_CHECK_IN: number|null = null;
 let ALERTED = false;
 
-let logger = new ConsoleLogger();
+const logger = new ConsoleLogger();
 
 async function sendAlert(): Promise<void>
 {
