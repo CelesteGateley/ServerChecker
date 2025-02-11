@@ -1,12 +1,29 @@
 import dayjs from "dayjs";
 
 abstract class Logger {
-    abstract log(text: any): void;
+    protected level: LogLevel;
+    constructor(level: LogLevel = LogLevel.DEBUG) {
+        this.level = level;
+    }
+
+    log(text: any): void
+    {
+        this.info(text);
+    }
+
     abstract debug(text: any): void;
     abstract info(text: any): void;
     abstract warn(text: any): void;
     abstract error(text: any): void;
     abstract fatal(text: any): void;
+}
+
+export enum LogLevel {
+    DEBUG = 0,
+    INFO = 1,
+    WARN = 2,
+    ERROR = 3,
+    FATAL = 4,
 }
 
 const consoleColors = {
@@ -36,25 +53,27 @@ export class ConsoleLogger extends Logger {
         return "[" + consoleColors.cyan + dayjs(Date.now()).format("YYYY-MM-DD HH:mm:ss") + consoleColors.reset + "] ";
     }
 
-    log(text: any): void {
-        this.info(text);
-    }
     debug(text: any): void {
+        if (this.level > LogLevel.DEBUG) { return; }
         console.debug(this.prefix() + consoleColors.reset + "[" + consoleColors.gray + "DEBUG" + consoleColors.reset + "] " + text + consoleColors.reset);
     }
     info(text: any): void {
+        if (this.level > LogLevel.INFO) { return; }
         console.info(this.prefix() + consoleColors.reset + "[" + consoleColors.blue + "INFO" + consoleColors.reset + "] " + text + consoleColors.reset);
 
     }
     warn(text: any): void {
+        if (this.level > LogLevel.WARN) { return; }
         console.warn(this.prefix() + consoleColors.reset + "[" + consoleColors.yellow + "WARN" + consoleColors.reset + "] " + text + consoleColors.reset);
 
     }
     error(text: any): void {
+        if (this.level > LogLevel.ERROR) { return; }
         console.error(this.prefix() + consoleColors.reset + "[" + consoleColors.red + "ERROR" + consoleColors.reset + "]" + text + consoleColors.reset);
 
     }
     fatal(text: any): void {
+        if (this.level > LogLevel.ERROR) { return; }
         console.error(this.prefix() + consoleColors.reset + "[" + consoleColors.red + "FATAL" + consoleColors.reset + "] " + text + consoleColors.reset);
         process.kill(process.pid, "SIGINT");
     }
