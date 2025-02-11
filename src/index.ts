@@ -45,28 +45,29 @@ function callHome(request: Request, response: Response) {
     response.send(JSON.stringify({success: true,}));
 }
 
-try {
-    telegram.command("last", (ctx) => {
-        if (LAST_CHECK_IN === null) {
-            ctx.reply("Server has not checked in");
-        } else {
-            ctx.reply("Server Last Checked In At " + formatDate(new Date(LAST_CHECK_IN)));
-        }
-    });
+function initialize() {
+    try {
+        telegram.command("last", (ctx) => {
+            if (LAST_CHECK_IN === null) {
+                ctx.reply("Server has not checked in");
+            } else {
+                ctx.reply("Server Last Checked In At " + formatDate(new Date(LAST_CHECK_IN)));
+            }
+        });
 
-    telegram.init(async () => {
-        setInterval(sendAlert, MAX_TIMEOUT * 60 * 1000);
-        logger.log("Telegram Bot Launched Successfully");
-    });
+        telegram.init(async () => {
+            setInterval(sendAlert, MAX_TIMEOUT * 60 * 1000);
+            logger.info("Telegram Bot Launched Successfully");
+        });
 
-    webserver.get("/call-home", callHome);
+        webserver.get("/call-home", callHome);
 
-    webserver.start(() => {
-        logger.log(`Webserver Launched Successfully`);
-    });
-} catch (e) {
-    console.error(e);
+        webserver.start(() => {
+            logger.info(`Webserver Launched Successfully`);
+        });
+    } catch (e) {
+        console.error(e);
+    }
 }
 
-
-
+initialize();
