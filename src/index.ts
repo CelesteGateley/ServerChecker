@@ -1,4 +1,5 @@
 // noinspection JSIgnoredPromiseFromCall
+import {Request, Response} from "express";
 import dotenv from "dotenv";
 import {formatDate} from "./functions";
 import {Telegram} from "./telegram";
@@ -35,14 +36,14 @@ async function sendAlert(): Promise<void>
     await telegram.send("It's been " + MAX_TIMEOUT + " minutes since last check in");
 }
 
-webserver.get("/call-home", (req, res) => {
+function callHome(request: Request, response: Response) {
     ALERTED = false;
     LAST_CHECK_IN = Date.now();
     logger.debug('Server Called Home At: ' + formatDate(new Date(LAST_CHECK_IN)));
 
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify({success: true,}));
-});
+    response.setHeader("Content-Type", "application/json");
+    response.send(JSON.stringify({success: true,}));
+}
 
 try {
     telegram.command("last", (ctx) => {
@@ -54,11 +55,11 @@ try {
     });
 
     telegram.init(async () => {
-        setInterval(async () => {
-            await sendAlert();
-        }, MAX_TIMEOUT * 60 * 1000);
+        setInterval(sendAlert, MAX_TIMEOUT * 60 * 1000);
         logger.log("Telegram Bot Launched Successfully");
     });
+
+    webserver.get("/call-home", callHome);
 
     webserver.start(() => {
         logger.log(`Webserver Launched Successfully`);
