@@ -1,7 +1,7 @@
 export declare global {
     declare namespace globalThis {
-        var MAX_TIMEOUT: number;
-        var LAST_CHECK_IN: number|null;
-        var ALERTED: boolean;
+        let MAX_TIMEOUT: number;
+        let LAST_CHECK_IN: number|null;
+        let ALERTED: boolean;
     }
 }

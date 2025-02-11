@@ -6,16 +6,16 @@ abstract class Logger {
         this.level = level;
     }
 
-    log(text: any): void
+    log(text: object|string|null): void
     {
         this.info(text);
     }
 
-    abstract debug(text: any): void;
-    abstract info(text: any): void;
-    abstract warn(text: any): void;
-    abstract error(text: any): void;
-    abstract fatal(text: any): void;
+    abstract debug(text: object|string|null): void;
+    abstract info(text: object|string|null): void;
+    abstract warn(text: object|string|null): void;
+    abstract error(text: object|string|null): void;
+    abstract fatal(text: object|string|null): void;
 }
 
 export enum LogLevel {
@@ -48,31 +48,31 @@ const consoleColors = {
 
 export class ConsoleLogger extends Logger {
 
-    private prefix(): any
+    private prefix(): object|string|null
     {
         return "[" + consoleColors.cyan + formatDate() + consoleColors.reset + "] ";
     }
 
-    debug(text: any): void {
+    debug(text: object|string|null): void {
         if (this.level > LogLevel.DEBUG) { return; }
         console.debug(this.prefix() + consoleColors.reset + "[" + consoleColors.gray + "DEBUG" + consoleColors.reset + "] " + text + consoleColors.reset);
     }
-    info(text: any): void {
+    info(text: object|string|null): void {
         if (this.level > LogLevel.INFO) { return; }
         console.info(this.prefix() + consoleColors.reset + "[" + consoleColors.blue + "INFO" + consoleColors.reset + "] " + text + consoleColors.reset);
 
     }
-    warn(text: any): void {
+    warn(text: object|string|null): void {
         if (this.level > LogLevel.WARN) { return; }
         console.warn(this.prefix() + consoleColors.reset + "[" + consoleColors.yellow + "WARN" + consoleColors.reset + "] " + text + consoleColors.reset);
 
     }
-    error(text: any): void {
+    error(text: object|string|null): void {
         if (this.level > LogLevel.ERROR) { return; }
         console.error(this.prefix() + consoleColors.reset + "[" + consoleColors.red + "ERROR" + consoleColors.reset + "]" + text + consoleColors.reset);
 
     }
-    fatal(text: any): void {
+    fatal(text: object|string|null): void {
         if (this.level > LogLevel.ERROR) { return; }
         console.error(this.prefix() + consoleColors.reset + "[" + consoleColors.red + "FATAL" + consoleColors.reset + "] " + text + consoleColors.reset);
         process.kill(process.pid, "SIGINT");
