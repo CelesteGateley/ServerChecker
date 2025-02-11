@@ -1,17 +1,14 @@
 // noinspection JSIgnoredPromiseFromCall
-
-import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import {formatDate} from "./functions";
 import {Telegram} from "./telegram";
 import {ConsoleLogger} from "./logging/logger";
+import {WebServer} from "./webserver";
 
 dotenv.config({path: "../.env"});
 
-const app: Express = express();
-const port = process.env.PORT || 4200;
-
 const telegram: Telegram = new Telegram(process.env.TOKEN || "", process.env.CHAT || "");
+const webserver: WebServer = new WebServer(process.env.PORT || 4200)
 
 let MAX_TIMEOUT = ((process.env.MAX_TIMEOUT as unknown as number) || 15);
 let LAST_CHECK_IN: number|null = null;
@@ -21,24 +18,28 @@ let logger = new ConsoleLogger();
 
 async function sendAlert(): Promise<void>
 {
+    if (LAST_CHECK_IN === null) {
+        logger.debug("Server hasn't called home before, skipping...")
+        return;
+    }
+    if (LAST_CHECK_IN < Date.now() - (MAX_TIMEOUT * 60 * 1000)) {
+        logger.debug("Server called home recently, skipping...")
+        return;
+    }
     if (ALERTED) {
-        logger.info("Recently ALERTED, skipping...");
+        logger.debug("Recently ALERTED, skipping...");
         return;
     }
     ALERTED = true;
-    logger.info("Sending alert");
+    logger.debug("Sending alert");
     await telegram.send("It's been " + MAX_TIMEOUT + " minutes since last check in");
 }
 
-async function calledHome(): Promise<void>
-{
+webserver.get("/call-home", (req, res) => {
     ALERTED = false;
     LAST_CHECK_IN = Date.now();
-    logger.info('Server Called Home At: ' + formatDate(new Date(LAST_CHECK_IN)));
-}
+    logger.debug('Server Called Home At: ' + formatDate(new Date(LAST_CHECK_IN)));
 
-app.get("/call-home", (req: Request, res: Response) => {
-    calledHome();
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify({success: true,}));
 });
@@ -54,16 +55,13 @@ try {
 
     telegram.init(async () => {
         setInterval(async () => {
-            if (LAST_CHECK_IN === null || LAST_CHECK_IN < Date.now() - (MAX_TIMEOUT * 60 * 1000)) {
-                return;
-            }
             await sendAlert();
         }, MAX_TIMEOUT * 60 * 1000);
-        logger.log("Server Launched Successfully");
+        logger.log("Telegram Bot Launched Successfully");
     });
 
-    app.listen(port, () => {
-        logger.log(`Listening on port ${port}`);
+    webserver.start(() => {
+        logger.log(`Webserver Launched Successfully`);
     });
 } catch (e) {
     console.error(e);
