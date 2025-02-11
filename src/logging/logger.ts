@@ -1,6 +1,6 @@
 import {formatDate} from "../functions";
 
-abstract class Logger {
+export abstract class Logger {
     protected level: LogLevel;
     constructor(level: LogLevel = LogLevel.DEBUG) {
         this.level = level;
