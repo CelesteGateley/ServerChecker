@@ -1,11 +1,13 @@
 import express, { Express, Request, Response } from "express";
 
 export class WebServer {
-    private port: string | number;
+    private port: number;
     private app: Express;
+    private ip: string;
 
-    constructor(port: string|number) {
-        this.port = port;
+    constructor(ip: string, port: string|number) {
+        this.ip = ip;
+        this.port = (port as number);
         this.app = express();
     }
 
@@ -15,7 +17,7 @@ export class WebServer {
      * @param callback Callback to run once the webserver has started
      */
     start(callback: () => void) {
-        this.app.listen(this.port, callback);
+        this.app.listen(this.port, this.ip, callback);
     }
 
     /**

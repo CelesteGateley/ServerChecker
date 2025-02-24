@@ -16,7 +16,7 @@ if (fs.existsSync('.env')) {
 }
 
 const telegram: Telegram = new Telegram(process.env.TOKEN || "", process.env.CHAT || "");
-const webserver: WebServer = new WebServer(process.env.PORT || 4200)
+const webserver: WebServer = new WebServer(process.env.IP || '0.0.0.0', process.env.PORT || 4200)
 const manager: Manager = new Manager((process.env.MAX_TIMEOUT as unknown as number) || 15);
 
 global.logger = new ConsoleLogger();
