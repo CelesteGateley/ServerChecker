@@ -5,8 +5,15 @@ import {Telegram} from "./telegram";
 import {ConsoleLogger} from "./logging/logger";
 import {WebServer} from "./webserver";
 import {Manager} from "./manager";
+import * as fs from "node:fs";
 
-dotenv.config({path: "../.env"});
+if (fs.existsSync('.env')) {
+    dotenv.config({path: ".env"});
+} else if (fs.existsSync('../.env')) {
+    dotenv.config({path: "../.env"});
+} else {
+    stop();
+}
 
 const telegram: Telegram = new Telegram(process.env.TOKEN || "", process.env.CHAT || "");
 const webserver: WebServer = new WebServer(process.env.PORT || 4200)
