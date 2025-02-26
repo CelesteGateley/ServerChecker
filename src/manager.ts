@@ -23,7 +23,7 @@ export class Manager {
             logger.debug("Recently alerted, skipping...");
             return false;
         }
-        if ((this.lastCheckIn < Date.now() - this.timeout)) {
+        if ((this.lastCheckIn > Date.now() - this.timeout)) {
             logger.debug("Server called home recently, skipping...")
             return false;
         }
